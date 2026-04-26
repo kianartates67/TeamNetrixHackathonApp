@@ -1,0 +1,19 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "amchackathon",
+          "appId": "1:514400916496:android:6ec26badd52f54e570e695",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "web": {
+        "default": {
+          "projectId": "amchackathon",
+          "appId": "1:514400916496:web:0eb9fcc21e2688a370e695"
+        }
+      }
+    }
+  }
+}
