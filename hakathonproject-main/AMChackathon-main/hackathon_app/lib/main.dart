@@ -735,7 +735,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   List<ScheduledClass> get _visibleSchedule {
     if (!_isTeacher) return _schedulerService.schedule;
     return _schedulerService.schedule
-        .where((sc) => sc.teacher.name == widget.currentUser.name)
+        .where((sc) =>
+            sc.teacher.id == widget.currentUser.id ||
+            sc.teacher.name == widget.currentUser.name)
         .toList();
   }
 

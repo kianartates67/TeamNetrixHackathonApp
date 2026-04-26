@@ -4,6 +4,7 @@ import '../models/teacher.dart';
 import '../models/section.dart';
 import '../models/scheduled_class.dart';
 import '../models/history_log.dart';
+import '../models/user.dart';
 import 'history_service.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -218,6 +219,10 @@ class SchedulerService {
 
       final startMinutes = slot.startHour * 60 + slot.startMinute;
       final endMinutes = slot.endHour * 60 + slot.endMinute;
+      final teacherIdentity = await _resolveTeacherIdentity(
+        teacherName: teacher.name,
+        courseId: resolvedCourseId,
+      );
 
       await FirebaseFirestore.instance
           .collection(_coursesCollection)
@@ -227,6 +232,8 @@ class SchedulerService {
         'createdByUid': currentUser.uid,
         'courseId': resolvedCourseId,
         'teacherName': teacher.name,
+        'teacherUid': teacherIdentity.$1,
+        'teacherEmail': teacherIdentity.$2,
         'subjectName': subject.name,
         'roomName': room.name,
         'sectionName': section.name,
@@ -282,7 +289,8 @@ class SchedulerService {
               capacity: 0,
               equipment: const []),
           teacher: Teacher(
-            id: 'fs_teacher_${m['teacherName']}',
+            id: (m['teacherUid'] ?? 'fs_teacher_${m['teacherName']}')
+                .toString(),
             name: (m['teacherName'] ?? '').toString(),
             expertiseSubjectIds: const [],
             courseId: resolvedCourseId,
@@ -313,6 +321,29 @@ class SchedulerService {
       return false;
     } catch (_) {
       return false;
+    }
+  }
+
+  Future<(String, String)> _resolveTeacherIdentity({
+    required String teacherName,
+    required String courseId,
+  }) async {
+    final name = teacherName.trim();
+    if (name.isEmpty) return ('', '');
+    try {
+      final snap = await FirebaseFirestore.instance
+          .collection('users')
+          .where('role', isEqualTo: UserRole.teacher.name)
+          .where('courseId', isEqualTo: courseId)
+          .where('name', isEqualTo: name)
+          .limit(1)
+          .get();
+      if (snap.docs.isEmpty) return ('', '');
+      final doc = snap.docs.first;
+      final email = (doc.data()['email'] ?? '').toString();
+      return (doc.id, email);
+    } catch (_) {
+      return ('', '');
     }
   }
 

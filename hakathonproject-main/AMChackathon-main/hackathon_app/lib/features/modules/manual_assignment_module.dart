@@ -84,6 +84,7 @@ extension ManualAssignmentModule on _DashboardScreenState {
                   _subjectName.isNotEmpty &&
                   _roomName.isNotEmpty &&
                   _sectionName.isNotEmpty) {
+                final activeCourseId = widget.currentUser.courseId ?? 'C1';
                 final start = parseTimeToMinutes(_startTime);
                 final end = parseTimeToMinutes(_endTime);
 
@@ -91,7 +92,7 @@ extension ManualAssignmentModule on _DashboardScreenState {
                   id: 'M_T_${DateTime.now().millisecondsSinceEpoch}',
                   name: _teacherName,
                   expertiseSubjectIds: const [],
-                  courseId: 'C1',
+                  courseId: activeCourseId,
                   availableDays: const [1, 2, 3, 4, 5, 6],
                   availableTimeSlots: const [
                     TimeSlot(
@@ -104,7 +105,7 @@ extension ManualAssignmentModule on _DashboardScreenState {
                   name: _subjectName,
                   units: 3,
                   requirements: const [],
-                  courseId: 'C1',
+                  courseId: activeCourseId,
                 );
 
                 final manualRoom = Room(
@@ -117,7 +118,7 @@ extension ManualAssignmentModule on _DashboardScreenState {
                 final manualSection = Section(
                   id: 'M_SEC_${DateTime.now().millisecondsSinceEpoch}',
                   name: _sectionName,
-                  courseId: 'C1',
+                  courseId: activeCourseId,
                 );
 
                 final desiredSlot = TimeSlot(
